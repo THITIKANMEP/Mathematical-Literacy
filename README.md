@@ -2,381 +2,436 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คณิตศาสตร์การเงิน</title>
+  <title>คณิตการเงินน้อง ป.5</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
     }
     * {
-      font-family: 'Prompt', sans-serif;
+      font-family: 'Kanit', sans-serif;
     }
-    .calculator-card {
-      backdrop-filter: blur(10px);
+    .activity-card {
       transition: all 0.3s ease;
+      cursor: pointer;
     }
-    .calculator-card:hover {
-      transform: translateY(-4px);
+    .activity-card:hover {
+      transform: translateY(-8px) scale(1.02);
     }
-    .tab-btn.active {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-      color: white;
+    .coin-spin {
+      animation: spin 2s linear infinite;
     }
-    .input-field:focus {
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    @keyframes spin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
     }
-    .result-box {
-      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-      animation: fadeIn 0.4s ease;
+    .score-pop {
+      animation: pop 0.5s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    @keyframes pop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
     .gradient-bg {
-      background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full bg-gray-50">
-  <div class="h-full overflow-auto">
-   <div class="gradient-bg min-h-full"><!-- Header -->
-    <header class="pt-8 pb-6 px-4 text-center">
-     <div class="flex items-center justify-center gap-3 mb-2">
-      <svg class="w-10 h-10 text-emerald-200" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <h1 id="app-title" class="text-3xl font-bold text-white">คณิตศาสตร์การเงิน</h1>
+ <body class="h-full">
+  <div class="h-full overflow-auto gradient-bg"><!-- Home Screen -->
+   <div id="home-screen" class="min-h-full p-6">
+    <header class="text-center mb-8 pt-4">
+     <div class="flex justify-center items-center gap-3 mb-3"><span class="text-6xl coin-spin">🪙</span>
+      <h1 id="app-title" class="text-4xl font-bold text-white drop-shadow-lg">คณิตการเงินน้อง ป.5</h1>
      </div>
-     <p class="text-emerald-200 text-sm">เครื่องมือคำนวณทางการเงินครบวงจร</p>
-    </header><!-- Tab Navigation -->
-    <nav class="px-4 pb-4">
-     <div class="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto"><button class="tab-btn active px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white transition-all" data-tab="compound">ดอกเบี้ยทบต้น</button> <button class="tab-btn px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white transition-all" data-tab="loan">สินเชื่อ/ผ่อนชำระ</button> <button class="tab-btn px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white transition-all" data-tab="savings">เป้าหมายออมเงิน</button> <button class="tab-btn px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white transition-all" data-tab="roi">ผลตอบแทนการลงทุน</button> <button class="tab-btn px-4 py-2 rounded-full text-sm font-medium bg-white/20 text-white transition-all" data-tab="inflation">มูลค่าเงินตามเวลา</button>
-     </div>
-    </nav><!-- Calculator Sections -->
-    <main class="px-4 pb-8">
-     <div class="max-w-2xl mx-auto"><!-- Compound Interest -->
-      <section id="compound" class="calculator-card bg-white rounded-2xl p-6 shadow-xl">
-       <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center"><span class="text-2xl">📈</span>
+     <p id="welcome-text" class="text-xl text-white/90">มาเรียนรู้เรื่องเงินกันเถอะ!</p>
+    </header>
+    <main class="max-w-4xl mx-auto"><!-- Activity Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"><!-- Money Recognition -->
+      <div class="activity-card bg-white rounded-3xl p-6 shadow-2xl" onclick="startActivity('money')">
+       <div class="text-center">
+        <div class="text-7xl mb-4">
+         💵
         </div>
-        <div>
-         <h2 class="text-xl font-semibold text-gray-800">คำนวณดอกเบี้ยทบต้น</h2>
-         <p class="text-sm text-gray-500">คำนวณผลตอบแทนจากการออมหรือลงทุน</p>
+        <h2 class="text-2xl font-bold text-purple-700 mb-2">รู้จักธนบัตร-เหรียญ</h2>
+        <p class="text-gray-600 mb-4">เรียนรู้มูลค่าของเงินบาท</p>
+        <div class="bg-purple-100 rounded-2xl p-3">
+         <p class="text-sm text-purple-800 font-semibold">✨ ฝึกนับเงิน</p>
         </div>
        </div>
-       <div class="space-y-4">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="principal">เงินต้น (บาท)</label> <input type="number" id="principal" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none transition" placeholder="100,000">
+      </div><!-- Addition -->
+      <div class="activity-card bg-white rounded-3xl p-6 shadow-2xl" onclick="startActivity('add')">
+       <div class="text-center">
+        <div class="text-7xl mb-4">
+         ➕
         </div>
-        <div class="grid grid-cols-2 gap-4">
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="rate">อัตราดอกเบี้ย (%/ปี)</label> <input type="number" id="rate" step="0.01" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none transition" placeholder="5">
-         </div>
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="years">ระยะเวลา (ปี)</label> <input type="number" id="years" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none transition" placeholder="10">
-         </div>
-        </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="compound-freq">ความถี่ทบต้น</label> <select id="compound-freq" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none transition bg-white"> <option value="1">ปีละครั้ง</option> <option value="2">ปีละ 2 ครั้ง</option> <option value="4">ปีละ 4 ครั้ง (รายไตรมาส)</option> <option value="12" selected>ปีละ 12 ครั้ง (รายเดือน)</option> <option value="365">ปีละ 365 ครั้ง (รายวัน)</option> </select>
-        </div><button onclick="calculateCompound()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-lg shadow-emerald-200"> คำนวณ </button>
-        <div id="compound-result" class="hidden result-box rounded-xl p-5 mt-4">
-         <div class="grid grid-cols-2 gap-4 text-center">
-          <div>
-           <p class="text-sm text-gray-600">ยอดเงินรวม</p>
-           <p id="compound-total" class="text-2xl font-bold text-emerald-700">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">ดอกเบี้ยที่ได้รับ</p>
-           <p id="compound-interest" class="text-2xl font-bold text-emerald-600">-</p>
-          </div>
-         </div>
+        <h2 class="text-2xl font-bold text-green-700 mb-2">บวกเงิน</h2>
+        <p class="text-gray-600 mb-4">ฝึกบวกเงินจากการซื้อของ</p>
+        <div class="bg-green-100 rounded-2xl p-3">
+         <p class="text-sm text-green-800 font-semibold">🛒 ซื้อของ</p>
         </div>
        </div>
-      </section><!-- Loan Calculator -->
-      <section id="loan" class="calculator-card bg-white rounded-2xl p-6 shadow-xl hidden">
-       <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center"><span class="text-2xl">🏦</span>
+      </div><!-- Subtraction -->
+      <div class="activity-card bg-white rounded-3xl p-6 shadow-2xl" onclick="startActivity('subtract')">
+       <div class="text-center">
+        <div class="text-7xl mb-4">
+         ➖
         </div>
-        <div>
-         <h2 class="text-xl font-semibold text-gray-800">คำนวณสินเชื่อ/ผ่อนชำระ</h2>
-         <p class="text-sm text-gray-500">คำนวณยอดผ่อนต่อเดือนและดอกเบี้ยรวม</p>
-        </div>
-       </div>
-       <div class="space-y-4">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="loan-amount">จำนวนเงินกู้ (บาท)</label> <input type="number" id="loan-amount" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition" placeholder="1,000,000">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="loan-rate">อัตราดอกเบี้ย (%/ปี)</label> <input type="number" id="loan-rate" step="0.01" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition" placeholder="7">
-         </div>
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="loan-years">ระยะเวลา (ปี)</label> <input type="number" id="loan-years" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition" placeholder="30">
-         </div>
-        </div><button onclick="calculateLoan()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-200"> คำนวณ </button>
-        <div id="loan-result" class="hidden result-box rounded-xl p-5 mt-4" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
-         <div class="grid grid-cols-3 gap-4 text-center">
-          <div>
-           <p class="text-sm text-gray-600">ผ่อนต่อเดือน</p>
-           <p id="loan-monthly" class="text-xl font-bold text-blue-700">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">ดอกเบี้ยรวม</p>
-           <p id="loan-total-interest" class="text-xl font-bold text-blue-600">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">จ่ายทั้งหมด</p>
-           <p id="loan-total" class="text-xl font-bold text-blue-800">-</p>
-          </div>
-         </div>
+        <h2 class="text-2xl font-bold text-orange-700 mb-2">ลบเงิน (เงินทอน)</h2>
+        <p class="text-gray-600 mb-4">คำนวณเงินทอนจากการซื้อของ</p>
+        <div class="bg-orange-100 rounded-2xl p-3">
+         <p class="text-sm text-orange-800 font-semibold">💰 คิดเงินทอน</p>
         </div>
        </div>
-      </section><!-- Savings Goal -->
-      <section id="savings" class="calculator-card bg-white rounded-2xl p-6 shadow-xl hidden">
-       <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center"><span class="text-2xl">🎯</span>
+      </div><!-- Saving -->
+      <div class="activity-card bg-white rounded-3xl p-6 shadow-2xl" onclick="startActivity('saving')">
+       <div class="text-center">
+        <div class="text-7xl mb-4">
+         🐷
         </div>
-        <div>
-         <h2 class="text-xl font-semibold text-gray-800">เป้าหมายออมเงิน</h2>
-         <p class="text-sm text-gray-500">คำนวณจำนวนเงินที่ต้องออมต่อเดือน</p>
-        </div>
-       </div>
-       <div class="space-y-4">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="goal-amount">เป้าหมาย (บาท)</label> <input type="number" id="goal-amount" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 outline-none transition" placeholder="500,000">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="goal-rate">ผลตอบแทน (%/ปี)</label> <input type="number" id="goal-rate" step="0.01" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 outline-none transition" placeholder="4">
-         </div>
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="goal-years">ระยะเวลา (ปี)</label> <input type="number" id="goal-years" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 outline-none transition" placeholder="5">
-         </div>
-        </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="initial-saving">เงินเริ่มต้น (บาท)</label> <input type="number" id="initial-saving" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 outline-none transition" placeholder="0">
-        </div><button onclick="calculateSavings()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-200"> คำนวณ </button>
-        <div id="savings-result" class="hidden result-box rounded-xl p-5 mt-4" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
-         <div class="text-center">
-          <p class="text-sm text-gray-600 mb-1">ต้องออมต่อเดือน</p>
-          <p id="savings-monthly" class="text-3xl font-bold text-amber-700">-</p>
-          <p class="text-sm text-gray-500 mt-2">รวมเงินที่ออม: <span id="savings-total-contributed" class="font-semibold text-amber-600">-</span></p>
-         </div>
+        <h2 class="text-2xl font-bold text-pink-700 mb-2">การออมเงิน</h2>
+        <p class="text-gray-600 mb-4">เรียนรู้การออมเงินและวางแผน</p>
+        <div class="bg-pink-100 rounded-2xl p-3">
+         <p class="text-sm text-pink-800 font-semibold">🎯 ออมเป็นเป้าหมาย</p>
         </div>
        </div>
-      </section><!-- ROI Calculator -->
-      <section id="roi" class="calculator-card bg-white rounded-2xl p-6 shadow-xl hidden">
-       <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center"><span class="text-2xl">💹</span>
-        </div>
-        <div>
-         <h2 class="text-xl font-semibold text-gray-800">ผลตอบแทนการลงทุน (ROI)</h2>
-         <p class="text-sm text-gray-500">คำนวณอัตราผลตอบแทนจากการลงทุน</p>
-        </div>
-       </div>
-       <div class="space-y-4">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="investment">เงินลงทุน (บาท)</label> <input type="number" id="investment" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 outline-none transition" placeholder="100,000">
-        </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="return-amount">มูลค่าปัจจุบัน (บาท)</label> <input type="number" id="return-amount" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 outline-none transition" placeholder="150,000">
-        </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="holding-years">ระยะเวลาถือครอง (ปี)</label> <input type="number" id="holding-years" step="0.5" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 outline-none transition" placeholder="3">
-        </div><button onclick="calculateROI()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-purple-600 transition-all shadow-lg shadow-purple-200"> คำนวณ </button>
-        <div id="roi-result" class="hidden result-box rounded-xl p-5 mt-4" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);">
-         <div class="grid grid-cols-3 gap-4 text-center">
-          <div>
-           <p class="text-sm text-gray-600">กำไร/ขาดทุน</p>
-           <p id="roi-profit" class="text-xl font-bold text-purple-700">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">ROI รวม</p>
-           <p id="roi-total" class="text-xl font-bold text-purple-600">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">ROI ต่อปี</p>
-           <p id="roi-annual" class="text-xl font-bold text-purple-800">-</p>
-          </div>
-         </div>
-        </div>
-       </div>
-      </section><!-- Inflation / Time Value -->
-      <section id="inflation" class="calculator-card bg-white rounded-2xl p-6 shadow-xl hidden">
-       <div class="flex items-center gap-3 mb-6">
-        <div class="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center"><span class="text-2xl">⏳</span>
-        </div>
-        <div>
-         <h2 class="text-xl font-semibold text-gray-800">มูลค่าเงินตามเวลา</h2>
-         <p class="text-sm text-gray-500">คำนวณผลกระทบของเงินเฟ้อ</p>
-        </div>
-       </div>
-       <div class="space-y-4">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1" for="current-amount">จำนวนเงินปัจจุบัน (บาท)</label> <input type="number" id="current-amount" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rose-500 outline-none transition" placeholder="1,000,000">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="inflation-rate">เงินเฟ้อ (%/ปี)</label> <input type="number" id="inflation-rate" step="0.1" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rose-500 outline-none transition" placeholder="3">
-         </div>
-         <div><label class="block text-sm font-medium text-gray-700 mb-1" for="future-years">จำนวนปี</label> <input type="number" id="future-years" class="input-field w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rose-500 outline-none transition" placeholder="20">
-         </div>
-        </div><button onclick="calculateInflation()" class="w-full py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold rounded-xl hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg shadow-rose-200"> คำนวณ </button>
-        <div id="inflation-result" class="hidden result-box rounded-xl p-5 mt-4" style="background: linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%);">
-         <div class="grid grid-cols-2 gap-4 text-center">
-          <div>
-           <p class="text-sm text-gray-600">มูลค่าที่แท้จริงในอนาคต</p>
-           <p id="future-value" class="text-2xl font-bold text-rose-700">-</p>
-          </div>
-          <div>
-           <p class="text-sm text-gray-600">กำลังซื้อที่ลดลง</p>
-           <p id="purchasing-power-loss" class="text-2xl font-bold text-rose-600">-</p>
-          </div>
-         </div>
-         <p class="text-center text-sm text-gray-500 mt-3">เงิน <span id="equiv-need" class="font-semibold text-rose-600">-</span> ในอนาคตจะมีค่าเท่ากับเงินปัจจุบันของคุณ</p>
-        </div>
-       </div>
-      </section>
+      </div>
+     </div><!-- Score History -->
+     <div class="bg-white/90 rounded-3xl p-6 shadow-2xl backdrop-blur">
+      <h3 class="text-2xl font-bold text-purple-800 mb-4 flex items-center gap-2"><span>🏆</span> ประวัติการเล่น</h3>
+      <div id="score-history" class="space-y-2">
+       <p class="text-gray-500 text-center py-4">ยังไม่มีประวัติ เริ่มเล่นเลย!</p>
+      </div>
      </div>
     </main>
+   </div><!-- Activity Screen -->
+   <div id="activity-screen" class="hidden min-h-full p-6">
+    <div class="max-w-3xl mx-auto"><!-- Header -->
+     <div class="flex justify-between items-center mb-6"><button onclick="goHome()" class="bg-white text-purple-700 px-6 py-3 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"> ← กลับ </button>
+      <div class="bg-white rounded-2xl px-6 py-3 shadow-lg"><span class="text-gray-600 font-semibold">คะแนน: </span> <span id="current-score" class="text-2xl font-bold text-purple-700">0</span> <span class="text-gray-600 font-semibold"> / </span> <span id="total-questions" class="text-xl font-bold text-gray-700">5</span>
+      </div>
+     </div><!-- Question Card -->
+     <div class="bg-white rounded-3xl p-8 shadow-2xl mb-6">
+      <h2 id="activity-title" class="text-3xl font-bold text-purple-800 mb-6 text-center"></h2>
+      <div id="question-container" class="text-center">
+       <div id="question-text" class="text-2xl font-semibold text-gray-800 mb-8"></div>
+       <div id="question-visual" class="mb-8"></div>
+       <div id="answer-options" class="grid grid-cols-2 gap-4"></div>
+      </div>
+      <div id="result-message" class="hidden mt-6 p-6 rounded-2xl text-center text-xl font-bold"></div>
+     </div><!-- Progress -->
+     <div class="bg-white/80 rounded-2xl p-4">
+      <div class="flex gap-2 justify-center">
+       <div id="progress-dots"></div>
+      </div>
+     </div>
+    </div>
    </div>
   </div>
   <script>
-    // Default config
     const defaultConfig = {
-      app_title: 'คณิตศาสตร์การเงิน'
+      app_title: 'คณิตการเงินน้อง ป.5',
+      welcome_text: 'มาเรียนรู้เรื่องเงินกันเถอะ!',
+      primary_color: '#a855f7',
+      secondary_color: '#22c55e',
+      background_color: '#667eea',
+      text_color: '#1f2937',
+      accent_color: '#f093fb'
     };
 
-    // Format number with commas
-    function formatNumber(num) {
-      return num.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    let currentActivity = '';
+    let currentQuestion = 0;
+    let score = 0;
+    let questions = [];
+    let activityRecords = [];
+
+    // Money values in Thai Baht
+    const moneyValues = {
+      coins: [1, 2, 5, 10],
+      notes: [20, 50, 100, 500, 1000]
+    };
+
+    // Data SDK Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        activityRecords = data;
+        renderScoreHistory();
+      }
+    };
+
+    // Initialize Data SDK
+    async function initDataSdk() {
+      const result = await window.dataSdk.init(dataHandler);
+      if (!result.isOk) {
+        console.error('Failed to initialize data SDK');
+      }
     }
 
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        const tabId = this.dataset.tab;
-        document.querySelectorAll('section[id]').forEach(section => {
-          if (section.id === tabId) {
-            section.classList.remove('hidden');
-          } else {
-            section.classList.add('hidden');
-          }
-        });
-      });
-    });
-
-    // Compound Interest Calculator
-    function calculateCompound() {
-      const principal = parseFloat(document.getElementById('principal').value) || 0;
-      const rate = parseFloat(document.getElementById('rate').value) / 100 || 0;
-      const years = parseFloat(document.getElementById('years').value) || 0;
-      const n = parseInt(document.getElementById('compound-freq').value) || 12;
-
-      if (principal <= 0 || rate <= 0 || years <= 0) {
+    // Render score history
+    function renderScoreHistory() {
+      const container = document.getElementById('score-history');
+      if (activityRecords.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-4">ยังไม่มีประวัติ เริ่มเล่นเลย!</p>';
         return;
       }
 
-      const amount = principal * Math.pow((1 + rate / n), n * years);
-      const interest = amount - principal;
+      const activityNames = {
+        money: '💵 รู้จักเงิน',
+        add: '➕ บวกเงิน',
+        subtract: '➖ ลบเงิน',
+        saving: '🐷 การออม'
+      };
 
-      document.getElementById('compound-total').textContent = '฿' + formatNumber(amount);
-      document.getElementById('compound-interest').textContent = '฿' + formatNumber(interest);
-      document.getElementById('compound-result').classList.remove('hidden');
+      const sortedRecords = [...activityRecords].sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      ).slice(0, 5);
+
+      container.innerHTML = sortedRecords.map(record => `
+        <div class="flex justify-between items-center bg-purple-50 rounded-xl p-4">
+          <span class="font-semibold text-gray-800">${activityNames[record.activity_type] || record.activity_type}</span>
+          <span class="text-lg font-bold text-purple-700">${record.score}/${record.total_questions} คะแนน</span>
+        </div>
+      `).join('');
     }
 
-    // Loan Calculator
-    function calculateLoan() {
-      const principal = parseFloat(document.getElementById('loan-amount').value) || 0;
-      const annualRate = parseFloat(document.getElementById('loan-rate').value) / 100 || 0;
-      const years = parseFloat(document.getElementById('loan-years').value) || 0;
-
-      if (principal <= 0 || annualRate <= 0 || years <= 0) {
+    // Save score to Data SDK
+    async function saveScore(activityType, score, totalQuestions) {
+      if (activityRecords.length >= 999) {
+        showMessage('บันทึกคะแนนไม่ได้ เนื่องจากถึงขีดจำกัด 999 รายการแล้ว', 'error');
         return;
       }
 
-      const monthlyRate = annualRate / 12;
-      const numPayments = years * 12;
-      const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
-      const totalPayment = monthlyPayment * numPayments;
-      const totalInterest = totalPayment - principal;
+      const record = {
+        id: Date.now().toString(),
+        activity_type: activityType,
+        score: score,
+        total_questions: totalQuestions,
+        timestamp: new Date().toISOString()
+      };
 
-      document.getElementById('loan-monthly').textContent = '฿' + formatNumber(monthlyPayment);
-      document.getElementById('loan-total-interest').textContent = '฿' + formatNumber(totalInterest);
-      document.getElementById('loan-total').textContent = '฿' + formatNumber(totalPayment);
-      document.getElementById('loan-result').classList.remove('hidden');
+      const result = await window.dataSdk.create(record);
+      if (!result.isOk) {
+        console.error('Failed to save score');
+      }
     }
 
-    // Savings Goal Calculator
-    function calculateSavings() {
-      const goal = parseFloat(document.getElementById('goal-amount').value) || 0;
-      const annualRate = parseFloat(document.getElementById('goal-rate').value) / 100 || 0;
-      const years = parseFloat(document.getElementById('goal-years').value) || 0;
-      const initial = parseFloat(document.getElementById('initial-saving').value) || 0;
+    // Show inline message
+    function showMessage(message, type) {
+      const resultDiv = document.getElementById('result-message');
+      resultDiv.textContent = message;
+      resultDiv.className = `mt-6 p-6 rounded-2xl text-center text-xl font-bold ${
+        type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+      }`;
+      resultDiv.classList.remove('hidden');
+      setTimeout(() => resultDiv.classList.add('hidden'), 2000);
+    }
 
-      if (goal <= 0 || years <= 0) {
-        return;
-      }
-
-      const monthlyRate = annualRate / 12;
-      const numMonths = years * 12;
+    // Start activity
+    function startActivity(type) {
+      currentActivity = type;
+      currentQuestion = 0;
+      score = 0;
       
-      // Future value of initial amount
-      const futureValueInitial = initial * Math.pow(1 + monthlyRate, numMonths);
-      const remainingGoal = goal - futureValueInitial;
+      const titles = {
+        money: '💵 รู้จักธนบัตรและเหรียญ',
+        add: '➕ บวกเงิน',
+        subtract: '➖ ลบเงิน (เงินทอน)',
+        saving: '🐷 การออมเงิน'
+      };
 
-      let monthlyPayment;
-      if (monthlyRate === 0) {
-        monthlyPayment = remainingGoal / numMonths;
+      document.getElementById('activity-title').textContent = titles[type];
+      document.getElementById('current-score').textContent = '0';
+      document.getElementById('total-questions').textContent = '5';
+
+      generateQuestions(type);
+      showQuestion();
+
+      document.getElementById('home-screen').classList.add('hidden');
+      document.getElementById('activity-screen').classList.remove('hidden');
+    }
+
+    // Generate questions
+    function generateQuestions(type) {
+      questions = [];
+      for (let i = 0; i < 5; i++) {
+        switch(type) {
+          case 'money':
+            questions.push(generateMoneyQuestion());
+            break;
+          case 'add':
+            questions.push(generateAddQuestion());
+            break;
+          case 'subtract':
+            questions.push(generateSubtractQuestion());
+            break;
+          case 'saving':
+            questions.push(generateSavingQuestion());
+            break;
+        }
+      }
+    }
+
+    // Generate money recognition question
+    function generateMoneyQuestion() {
+      const allMoney = [...moneyValues.coins, ...moneyValues.notes];
+      const value = allMoney[Math.floor(Math.random() * allMoney.length)];
+      const isNote = value >= 20;
+      
+      const emoji = isNote ? '💵' : '🪙';
+      const type = isNote ? 'ธนบัตร' : 'เหรียญ';
+      
+      return {
+        text: `${emoji} นี่คือ${type}มูลค่าเท่าไหร่?`,
+        visual: `<div class="text-8xl">${emoji}</div><div class="text-4xl font-bold text-purple-600 mt-4">${value}</div>`,
+        answer: value,
+        options: generateOptions(value, allMoney)
+      };
+    }
+
+    // Generate addition question
+    function generateAddQuestion() {
+      const price1 = [10, 15, 20, 25, 30, 35][Math.floor(Math.random() * 6)];
+      const price2 = [5, 10, 15, 20, 25][Math.floor(Math.random() * 5)];
+      const total = price1 + price2;
+
+      return {
+        text: `ซื้อขนม ${price1} บาท และน้ำ ${price2} บาท รวมเท่าไหร่?`,
+        visual: `<div class="flex justify-center gap-8 text-6xl mb-4"><div>🍪<br><span class="text-2xl font-bold">${price1}฿</span></div><div>🧃<br><span class="text-2xl font-bold">${price2}฿</span></div></div>`,
+        answer: total,
+        options: generateOptions(total, [total - 10, total - 5, total, total + 5])
+      };
+    }
+
+    // Generate subtraction question
+    function generateSubtractQuestion() {
+      const price = [25, 30, 35, 40, 45, 55, 65, 75][Math.floor(Math.random() * 8)];
+      const paid = [50, 100][Math.floor(Math.random() * 2)];
+      const change = paid - price;
+
+      return {
+        text: `ซื้อของ ${price} บาท จ่ายด้วย ${paid} บาท ได้เงินทอนเท่าไหร่?`,
+        visual: `<div class="text-5xl mb-4">🛍️</div><div class="text-xl font-semibold text-gray-700">ราคา ${price} บาท<br>จ่าย ${paid} บาท</div>`,
+        answer: change,
+        options: generateOptions(change, [change - 10, change - 5, change, change + 5])
+      };
+    }
+
+    // Generate saving question
+    function generateSavingQuestion() {
+      const daily = [10, 15, 20, 25, 30][Math.floor(Math.random() * 5)];
+      const days = [5, 7, 10, 14][Math.floor(Math.random() * 4)];
+      const total = daily * days;
+
+      return {
+        text: `ออมเงินวันละ ${daily} บาท ออมไป ${days} วัน จะได้เงินเท่าไหร่?`,
+        visual: `<div class="text-7xl mb-4">🐷</div><div class="text-xl font-semibold text-pink-700">${daily} บาท/วัน × ${days} วัน</div>`,
+        answer: total,
+        options: generateOptions(total, [total - 20, total - 10, total, total + 10])
+      };
+    }
+
+    // Generate answer options
+    function generateOptions(correct, pool) {
+      let opts = [correct];
+      while (opts.length < 4) {
+        const rand = pool[Math.floor(Math.random() * pool.length)];
+        if (!opts.includes(rand) && rand > 0) {
+          opts.push(rand);
+        }
+      }
+      return opts.sort(() => Math.random() - 0.5);
+    }
+
+    // Show question
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        endActivity();
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      document.getElementById('question-text').textContent = q.text;
+      document.getElementById('question-visual').innerHTML = q.visual;
+
+      const optionsHtml = q.options.map(opt => `
+        <button onclick="checkAnswer(${opt}, ${q.answer})" 
+                class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold text-2xl py-6 rounded-2xl transition-all transform hover:scale-105 shadow-lg">
+          ${opt} บาท
+        </button>
+      `).join('');
+      document.getElementById('answer-options').innerHTML = optionsHtml;
+
+      updateProgress();
+    }
+
+    // Check answer
+    function checkAnswer(selected, correct) {
+      const buttons = document.querySelectorAll('#answer-options button');
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selected === correct) {
+        score++;
+        document.getElementById('current-score').textContent = score;
+        showMessage('ถูกต้อง! เก่งมาก 🎉', 'success');
       } else {
-        monthlyPayment = remainingGoal * monthlyRate / (Math.pow(1 + monthlyRate, numMonths) - 1);
+        showMessage(`ไม่ถูกต้อง คำตอบคือ ${correct} บาท`, 'error');
       }
 
-      const totalContributed = initial + (monthlyPayment * numMonths);
-
-      document.getElementById('savings-monthly').textContent = '฿' + formatNumber(Math.max(0, monthlyPayment));
-      document.getElementById('savings-total-contributed').textContent = '฿' + formatNumber(Math.max(0, totalContributed));
-      document.getElementById('savings-result').classList.remove('hidden');
+      setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+      }, 2000);
     }
 
-    // ROI Calculator
-    function calculateROI() {
-      const investment = parseFloat(document.getElementById('investment').value) || 0;
-      const currentValue = parseFloat(document.getElementById('return-amount').value) || 0;
-      const years = parseFloat(document.getElementById('holding-years').value) || 1;
-
-      if (investment <= 0) {
-        return;
-      }
-
-      const profit = currentValue - investment;
-      const roiTotal = ((currentValue - investment) / investment) * 100;
-      const roiAnnual = (Math.pow(currentValue / investment, 1 / years) - 1) * 100;
-
-      const profitEl = document.getElementById('roi-profit');
-      profitEl.textContent = (profit >= 0 ? '+' : '') + '฿' + formatNumber(profit);
-      profitEl.className = 'text-xl font-bold ' + (profit >= 0 ? 'text-green-600' : 'text-red-600');
-
-      document.getElementById('roi-total').textContent = roiTotal.toFixed(2) + '%';
-      document.getElementById('roi-annual').textContent = roiAnnual.toFixed(2) + '%';
-      document.getElementById('roi-result').classList.remove('hidden');
+    // Update progress dots
+    function updateProgress() {
+      const dotsHtml = Array(5).fill(0).map((_, i) => {
+        let color = 'bg-gray-300';
+        if (i < currentQuestion) color = 'bg-green-500';
+        else if (i === currentQuestion) color = 'bg-purple-500';
+        return `<div class="w-12 h-12 rounded-full ${color}"></div>`;
+      }).join('');
+      document.getElementById('progress-dots').innerHTML = dotsHtml;
     }
 
-    // Inflation Calculator
-    function calculateInflation() {
-      const currentAmount = parseFloat(document.getElementById('current-amount').value) || 0;
-      const inflationRate = parseFloat(document.getElementById('inflation-rate').value) / 100 || 0;
-      const years = parseFloat(document.getElementById('future-years').value) || 0;
+    // End activity
+    async function endActivity() {
+      document.getElementById('question-container').innerHTML = `
+        <div class="text-center score-pop">
+          <div class="text-8xl mb-6">🎊</div>
+          <h3 class="text-4xl font-bold text-purple-800 mb-4">เสร็จแล้ว!</h3>
+          <div class="text-6xl font-bold text-green-600 mb-6">${score}/5</div>
+          <p class="text-2xl text-gray-700 mb-8">${score >= 4 ? 'เก่งมาก! 🌟' : score >= 3 ? 'ดีมาก! 👍' : 'ลองใหม่อีกครั้งนะ! 💪'}</p>
+          <button onclick="goHome()" class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-xl shadow-lg hover:shadow-xl transition-all">
+            กลับหน้าหลัก
+          </button>
+        </div>
+      `;
 
-      if (currentAmount <= 0 || years <= 0) {
-        return;
-      }
+      await saveScore(currentActivity, score, 5);
+    }
 
-      const futureValue = currentAmount / Math.pow(1 + inflationRate, years);
-      const purchasingPowerLoss = currentAmount - futureValue;
-      const equivalentNeed = currentAmount * Math.pow(1 + inflationRate, years);
-
-      document.getElementById('future-value').textContent = '฿' + formatNumber(futureValue);
-      document.getElementById('purchasing-power-loss').textContent = '-฿' + formatNumber(purchasingPowerLoss);
-      document.getElementById('equiv-need').textContent = '฿' + formatNumber(equivalentNeed);
-      document.getElementById('inflation-result').classList.remove('hidden');
+    // Go home
+    function goHome() {
+      document.getElementById('home-screen').classList.remove('hidden');
+      document.getElementById('activity-screen').classList.add('hidden');
     }
 
     // Element SDK implementation
     async function onConfigChange(config) {
-      const title = config.app_title || defaultConfig.app_title;
-      document.getElementById('app-title').textContent = title;
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      document.getElementById('welcome-text').textContent = config.welcome_text || defaultConfig.welcome_text;
     }
 
     function mapToCapabilities(config) {
@@ -390,11 +445,12 @@
 
     function mapToEditPanelValues(config) {
       return new Map([
-        ['app_title', config.app_title || defaultConfig.app_title]
+        ['app_title', config.app_title || defaultConfig.app_title],
+        ['welcome_text', config.welcome_text || defaultConfig.welcome_text]
       ]);
     }
 
-    // Initialize SDK
+    // Initialize
     if (window.elementSdk) {
       window.elementSdk.init({
         defaultConfig,
@@ -403,6 +459,10 @@
         mapToEditPanelValues
       });
     }
+
+    if (window.dataSdk) {
+      initDataSdk();
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c0bab4390487323',t:'MTc2ODg4MTY3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c0bbf3152b67336',t:'MTc2ODg4MjQ4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
